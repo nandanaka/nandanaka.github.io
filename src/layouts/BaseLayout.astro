@@ -12,6 +12,8 @@ const {
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+
+const GA_MEASUREMENT_ID = 'G-R4BDD84TR6';
 ---
 
 <html lang="en">
@@ -27,6 +29,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
     <title>{title}</title>
+    {import.meta.env.PROD && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+        <script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', GA_MEASUREMENT_ID);
+        </script>
+      </>
+    )}
   </head>
   <body>
     <main>

@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ data }) => !data.draft);
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { data } = project;
+---
+
+<BaseLayout title={`${data.title} — Nandana K A`} description={data.summary}>
+  <a class="back-link" href="/">← Back</a>
+
+  <header>
+    <h1>{data.title}</h1>
+    <p style="color: var(--fg-muted); margin-top: 0.25rem;">{data.summary}</p>
+  </header>
+
+  <div class="project-meta">
+    {data.role && <span><strong>Role:</strong> {data.role}</span>}
+    {data.timeframe && <span><strong>When:</strong> {data.timeframe}</span>}
+    {data.stack.length > 0 && <span><strong>Stack:</strong> {data.stack.join(', ')}</span>}
+  </div>
+
+  {data.impact.length > 0 && (
+    <>
+      <h2>Impact</h2>
+      <ul class="impact-list">
+        {data.impact.map((item) => <li>{item}</li>)}
+      </ul>
+    </>
+  )}
+
+  <article>
+    <Content />
+  </article>
+
+  <footer>
+    <p><a href="/">← Back to home</a></p>
+  </footer>
+</BaseLayout>
